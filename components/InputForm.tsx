@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserInput } from '../types';
-import { PlayCircle, ShieldAlert, Loader2, Sparkles, Wand2, RotateCcw, Check, ArrowRight } from 'lucide-react';
+import { PlayCircle, ShieldAlert, Loader2, Wand2, RotateCcw, ArrowRight, CornerDownLeft, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface InputFormProps {
   onSubmit: (data: UserInput) => void;
@@ -93,41 +93,54 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
     setActivePresetIndex(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!plan.trim()) return;
+  const triggerSubmit = () => {
+    if (!plan.trim() || isLoading) return;
     onSubmit({
-      plan,
-      constraints,
-      resources,
-      evidence,
+      plan: plan.trim(),
+      constraints: constraints.trim(),
+      resources: resources.trim(),
+      evidence: evidence.trim(),
       projectName: projectName.trim() || undefined,
       projectId: initialValues?.projectId
     });
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    triggerSubmit();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      triggerSubmit();
+    }
+  };
+
+  const isFormValid = plan.trim().length > 10;
+
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-4">
+    <div className="w-full max-w-3xl mx-auto space-y-4 animate-pop-in" onKeyDown={handleKeyDown}>
       
-      {/* Interactive Quick-Fill Presets Banner */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm">
-        <div className="flex items-center justify-between gap-2 mb-3">
+      {/* 3D Interactive Quick-Fill Presets Console */}
+      <div className="bg-white rounded-2xl border-3 border-slate-900 p-4 sm:p-5 shadow-[5px_5px_0px_#0f172a]">
+        <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b-2 border-slate-200">
           <div className="flex items-center gap-2">
-            <span className="p-1 rounded-lg bg-indigo-50 text-indigo-600">
+            <span className="p-1.5 rounded-lg bg-indigo-600 text-white border border-slate-900 shadow-[1px_1px_0px_#0f172a]">
               <Wand2 className="w-4 h-4" />
             </span>
-            <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <span className="text-xs font-black text-slate-900 uppercase tracking-widest">
               1-Click Plan Ideas
             </span>
-            <span className="text-xs text-slate-500 font-normal hidden sm:inline">
-              · Try a sample plan instantly
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+              · Try a pre-configured plan to see how the engine works
             </span>
           </div>
           {(plan || projectName) && (
             <button
               type="button"
               onClick={handleClear}
-              className="text-xs text-slate-500 hover:text-rose-600 flex items-center gap-1 font-medium transition-colors"
+              className="text-xs text-slate-700 hover:text-rose-600 font-black flex items-center gap-1 transition-colors px-2 py-0.5 rounded border border-slate-300 hover:border-rose-400 bg-slate-50"
             >
               <RotateCcw className="w-3 h-3" />
               Reset fields
@@ -135,7 +148,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
           )}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {PRESETS.map((preset, idx) => {
             const isSelected = activePresetIndex === idx;
             return (
@@ -143,21 +156,21 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
                 key={idx}
                 type="button"
                 onClick={() => handleApplyPreset(preset, idx)}
-                className={`p-2.5 rounded-xl text-left border transition-all flex flex-col justify-between ${
+                className={`p-3 rounded-xl text-left border-2 transition-all flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-indigo-50/80 border-indigo-500 text-indigo-950 shadow-sm ring-1 ring-indigo-500'
-                    : 'bg-slate-50 hover:bg-white border-slate-200 hover:border-indigo-300 text-slate-800 hover:shadow-sm'
+                    ? 'bg-indigo-600 border-slate-900 text-white shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] translate-y-0.5'
+                    : 'bg-white hover:bg-slate-50 border-slate-900 text-slate-900 shadow-[3px_3px_0px_#0f172a] hover:shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5'
                 }`}
               >
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block mb-1">
+                  <span className={`text-[10px] font-black uppercase tracking-wider block mb-1 ${isSelected ? 'text-indigo-200' : 'text-indigo-600'}`}>
                     {preset.badge}
                   </span>
-                  <span className="text-xs font-bold block truncate text-slate-900">
+                  <span className="text-xs font-black block truncate">
                     {preset.title}
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-500 truncate mt-1">
+                <span className={`text-[11px] truncate mt-1.5 font-medium ${isSelected ? 'text-indigo-100' : 'text-slate-500'}`}>
                   {preset.projectName}
                 </span>
               </button>
@@ -166,35 +179,33 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
         </div>
       </div>
 
-      {/* Main Input Form Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex items-center justify-between pb-6 mb-6 border-b border-slate-100">
+      {/* Main 3D Input Form Card */}
+      <div className="bg-white rounded-2xl border-3 border-slate-900 p-6 sm:p-7 shadow-[6px_6px_0px_#0f172a]">
+        <div className="flex items-center justify-between pb-4 mb-5 border-b-2 border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-50 rounded-xl text-indigo-600">
+            <div className="p-2.5 bg-indigo-600 border-2 border-slate-900 rounded-xl text-white shadow-[2px_2px_0px_#0f172a]">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Plan Feasibility Auditor</h2>
-              <p className="text-xs text-slate-500">Provide your realistic constraints so the AI can simulate failure points</p>
+              <h2 className="text-lg font-black text-slate-900 tracking-tight">Plan Feasibility Auditor</h2>
+              <p className="text-xs text-slate-500 font-medium">Input your goals and real limits so the AI can simulate failure points</p>
             </div>
           </div>
-          <span className="text-[11px] font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full hidden sm:inline-block">
-            Gemini Feasibility Engine
+          <span className="text-[11px] font-black text-slate-900 bg-indigo-100 border-2 border-slate-900 px-3 py-1 rounded-lg shadow-[2px_2px_0px_#0f172a] hidden sm:inline-block">
+            Gemini Engine
           </span>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Project Name */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="projectName" className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
-                Project Name <span className="font-normal text-slate-400 lowercase">(optional)</span>
-              </label>
-            </div>
+            <label htmlFor="projectName" className="block text-xs font-black text-slate-900 uppercase tracking-wider">
+              Project Name <span className="font-semibold text-slate-400 lowercase">(optional)</span>
+            </label>
             <input
               type="text"
               id="projectName"
-              className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl p-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all"
+              className="w-full bg-slate-50 hover:bg-white focus:bg-white border-2 border-slate-900 focus:border-indigo-600 focus:shadow-[3px_3px_0px_#4f46e5] rounded-xl p-3 text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all shadow-[2px_2px_0px_#0f172a]"
               placeholder="e.g. AI Fitness Coach App, Micro-SaaS Launch..."
               value={projectName}
               onChange={(e) => {
@@ -207,16 +218,21 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
           {/* The Plan */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="plan" className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
-                The Plan Description <span className="text-rose-500">*</span>
+              <label htmlFor="plan" className="block text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                The Plan Description <span className="text-rose-600">*</span>
+                {plan.trim().length > 10 && (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline" />
+                )}
               </label>
-              <span className="text-xs text-slate-400">Be concrete on goals & timeline</span>
+              <span className="text-xs font-bold text-slate-400">
+                {plan.length} chars
+              </span>
             </div>
             <textarea
               id="plan"
               required
               rows={4}
-              className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl p-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all resize-none"
+              className="w-full bg-slate-50 hover:bg-white focus:bg-white border-2 border-slate-900 focus:border-indigo-600 focus:shadow-[3px_3px_0px_#4f46e5] rounded-xl p-3.5 text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all resize-none shadow-[2px_2px_0px_#0f172a]"
               placeholder="Be specific. E.g., 'I want to build a SaaS app in 2 months and acquire 100 paying customers through cold outreach...'"
               value={plan}
               onChange={(e) => {
@@ -229,26 +245,26 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
           {/* Time & Resources Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="constraints" className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+              <label htmlFor="constraints" className="block text-xs font-black text-slate-900 uppercase tracking-wider">
                 Time Constraints
               </label>
               <input
                 type="text"
                 id="constraints"
-                className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl p-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all"
+                className="w-full bg-slate-50 hover:bg-white focus:bg-white border-2 border-slate-900 focus:border-indigo-600 focus:shadow-[3px_3px_0px_#4f46e5] rounded-xl p-3 text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all shadow-[2px_2px_0px_#0f172a]"
                 placeholder="e.g. 2 hours/day, full-time job..."
                 value={constraints}
                 onChange={(e) => setConstraints(e.target.value)}
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="resources" className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+              <label htmlFor="resources" className="block text-xs font-black text-slate-900 uppercase tracking-wider">
                 Budget & Skills
               </label>
               <input
                 type="text"
                 id="resources"
-                className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl p-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all"
+                className="w-full bg-slate-50 hover:bg-white focus:bg-white border-2 border-slate-900 focus:border-indigo-600 focus:shadow-[3px_3px_0px_#4f46e5] rounded-xl p-3 text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all shadow-[2px_2px_0px_#0f172a]"
                 placeholder="e.g. $500 budget, Junior React dev..."
                 value={resources}
                 onChange={(e) => setResources(e.target.value)}
@@ -258,28 +274,28 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
 
           {/* Supporting Evidence */}
           <div className="space-y-1.5">
-            <label htmlFor="evidence" className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Supporting Validation & Data <span className="font-normal text-slate-400 lowercase">(optional)</span>
+            <label htmlFor="evidence" className="block text-xs font-black text-slate-900 uppercase tracking-wider">
+              Supporting Validation & Data <span className="font-semibold text-slate-400 lowercase">(optional)</span>
             </label>
             <textarea
               id="evidence"
               rows={2}
-              className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 rounded-xl p-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all resize-none"
+              className="w-full bg-slate-50 hover:bg-white focus:bg-white border-2 border-slate-900 focus:border-indigo-600 focus:shadow-[3px_3px_0px_#4f46e5] rounded-xl p-3 text-sm text-slate-900 font-medium placeholder-slate-400 outline-none transition-all resize-none shadow-[2px_2px_0px_#0f172a]"
               placeholder="e.g. Pre-orders, customer interview notes, competitor pricing, or past project metrics..."
               value={evidence}
               onChange={(e) => setEvidence(e.target.value)}
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Heavy 3D Mechanical Action Button with Shortcut Hint */}
           <div className="pt-2">
             <button
               type="submit"
-              disabled={isLoading || !plan.trim()}
-              className={`w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2.5 transition-all duration-200 shadow-md ${
-                isLoading || !plan.trim()
-                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
-                  : 'bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white shadow-indigo-200 hover:shadow-indigo-300'
+              disabled={isLoading || !isFormValid}
+              className={`w-full py-4 rounded-xl font-black text-base flex items-center justify-center gap-3 transition-all duration-150 ${
+                isLoading || !isFormValid
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed border-2 border-slate-400'
+                  : 'neo-3d-btn-primary active:scale-[0.99]'
               }`}
             >
               {isLoading ? (
@@ -289,9 +305,12 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initi
                 </>
               ) : (
                 <>
-                  <PlayCircle className="w-5 h-5" />
-                  <span>Execute Reality Check</span>
-                  <ArrowRight className="w-4 h-4 ml-1 opacity-70" />
+                  <PlayCircle className="w-6 h-6" />
+                  <span className="uppercase tracking-wider">Execute Reality Check</span>
+                  <div className="hidden sm:flex items-center gap-0.5 text-xs px-2 py-0.5 bg-black/20 rounded border border-white/20 font-mono ml-1">
+                    <span>⌘</span>
+                    <CornerDownLeft className="w-3 h-3" />
+                  </div>
                 </>
               )}
             </button>

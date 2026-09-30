@@ -8,14 +8,14 @@ interface AuditParametersProps {
 
 export const AuditParameters: React.FC<AuditParametersProps> = ({ input }) => {
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-      <div className="p-4 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
-        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
+    <div className="bg-white border-3 border-slate-900 rounded-2xl overflow-hidden shadow-[6px_6px_0px_#0f172a] flex flex-col">
+      <div className="p-4 border-b-2 border-slate-900 bg-slate-50 flex items-center justify-between">
+        <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-indigo-600 border border-slate-900"></div>
           Audited Parameters
         </h3>
         {input.variationLabel && (
-          <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
+          <span className="text-[11px] font-black text-slate-950 bg-indigo-100 border-2 border-slate-900 px-2.5 py-0.5 rounded-lg shadow-[1px_1px_0px_#0f172a]">
             {input.variationLabel}
           </span>
         )}
@@ -25,10 +25,10 @@ export const AuditParameters: React.FC<AuditParametersProps> = ({ input }) => {
         {/* Project Name if present */}
         {input.projectName && (
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">
               Project
             </span>
-            <span className="text-sm font-bold text-slate-900">
+            <span className="text-sm font-black text-slate-900">
               {input.projectName}
             </span>
           </div>
@@ -36,11 +36,11 @@ export const AuditParameters: React.FC<AuditParametersProps> = ({ input }) => {
 
         {/* Plan */}
         <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5 text-slate-500">
+          <div className="flex items-center gap-1.5 text-slate-700">
             <AlignLeft className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">The Plan</span>
+            <span className="text-[10px] font-black uppercase tracking-wider">The Plan</span>
           </div>
-          <p className="text-slate-800 text-sm leading-relaxed border-l-2 border-indigo-500 pl-3 py-0.5">
+          <p className="text-slate-900 text-sm leading-relaxed border-l-3 border-indigo-600 pl-3 py-0.5 font-medium bg-slate-50 rounded-r-lg">
             {input.plan}
           </p>
         </div>
@@ -48,11 +48,11 @@ export const AuditParameters: React.FC<AuditParametersProps> = ({ input }) => {
         {/* Constraints */}
         {input.constraints && (
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-slate-500">
+            <div className="flex items-center gap-1.5 text-slate-700">
               <Clock className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Constraints</span>
+              <span className="text-[10px] font-black uppercase tracking-wider">Constraints</span>
             </div>
-            <p className="text-slate-700 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 leading-relaxed font-medium">
+            <p className="text-slate-800 text-xs bg-slate-50 p-2.5 rounded-xl border-2 border-slate-900 leading-relaxed font-bold shadow-[2px_2px_0px_#0f172a]">
               {input.constraints}
             </p>
           </div>
@@ -61,11 +61,11 @@ export const AuditParameters: React.FC<AuditParametersProps> = ({ input }) => {
         {/* Resources */}
         {input.resources && (
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-slate-500">
+            <div className="flex items-center gap-1.5 text-slate-700">
               <Hammer className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Resources</span>
+              <span className="text-[10px] font-black uppercase tracking-wider">Resources</span>
             </div>
-            <p className="text-slate-700 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 leading-relaxed font-medium">
+            <p className="text-slate-800 text-xs bg-slate-50 p-2.5 rounded-xl border-2 border-slate-900 leading-relaxed font-bold shadow-[2px_2px_0px_#0f172a]">
               {input.resources}
             </p>
           </div>
@@ -74,11 +74,11 @@ export const AuditParameters: React.FC<AuditParametersProps> = ({ input }) => {
         {/* Evidence */}
         {input.evidence && (
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-slate-500">
+            <div className="flex items-center gap-1.5 text-slate-700">
               <Link className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Supporting Evidence</span>
+              <span className="text-[10px] font-black uppercase tracking-wider">Supporting Evidence</span>
             </div>
-            <p className="text-slate-700 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 whitespace-pre-wrap leading-relaxed font-medium">
+            <p className="text-slate-800 text-xs bg-slate-50 p-2.5 rounded-xl border-2 border-slate-900 whitespace-pre-wrap leading-relaxed font-bold shadow-[2px_2px_0px_#0f172a]">
               {input.evidence}
             </p>
           </div>

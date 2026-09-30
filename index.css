@@ -1,20 +1,148 @@
-/* Light mode custom scrollbars and clean utilities */
+/* Classic 3D Bold Animated Styling */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom 3D mechanical and physical depth utilities */
+.neo-3d-card {
+  border: 2px solid #0f172a;
+  box-shadow: 6px 6px 0px #0f172a;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.neo-3d-card:hover {
+  transform: translateY(-2px) translateX(-2px);
+  box-shadow: 8px 8px 0px #0f172a;
+}
+
+.neo-3d-card-subtle {
+  border: 2px solid #cbd5e1;
+  box-shadow: 4px 4px 0px #cbd5e1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.neo-3d-card-subtle:hover {
+  border-color: #0f172a;
+  box-shadow: 5px 5px 0px #0f172a;
+  transform: translateY(-2px);
+}
+
+/* 3D Push Button Styles */
+.neo-3d-btn {
+  border: 2px solid #0f172a;
+  box-shadow: 0 4px 0px #0f172a;
+  transform: translateY(0);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-3d-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0px #0f172a;
+}
+
+.neo-3d-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0px #0f172a;
+}
+
+.neo-3d-btn-primary {
+  background: #4f46e5;
+  color: #ffffff;
+  border: 2px solid #1e1b4b;
+  box-shadow: 0 5px 0px #1e1b4b;
+  transform: translateY(0);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-3d-btn-primary:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0px #1e1b4b;
+}
+
+.neo-3d-btn-primary:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0px #1e1b4b;
+}
+
+/* 3D Dial & Bevel Effects */
+.beveled-inset {
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1), inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+}
+
+.beveled-outset {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.08), -2px -2px 5px rgba(255, 255, 255, 0.9);
+}
+
+/* 3D Float Animations */
+@keyframes float3d {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0.5deg);
+  }
+}
+
+.animate-float-3d {
+  animation: float3d 4s ease-in-out infinite;
+}
+
+@keyframes float3d-delayed {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-0.5deg);
+  }
+}
+
+.animate-float-3d-delayed {
+  animation: float3d-delayed 5s ease-in-out infinite 1s;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.92) translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-pop-in {
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes pulseBorder {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0);
+  }
+}
+
+.animate-pulse-border {
+  animation: pulseBorder 2s infinite;
+}
+
+/* Custom Scrollbars */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: #f1f5f9;
+  border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #94a3b8;
+  border: 1px solid #64748b;
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Tabular figures for data metrics */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
+  background: #475569;
 }

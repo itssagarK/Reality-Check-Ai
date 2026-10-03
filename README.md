@@ -39,15 +39,24 @@ It asks:
 
 ##  What's New in the Latest Version
 
-The latest release brings major UI, engine, and workflow improvements:
+The latest release introduces a **classic-meets-modern design system** and transforms audit results into interactive visual graphs:
 
-*  **Bold, High-Contrast Light Mode**: Clean, elevated design built with *Plus Jakarta Sans*, high-contrast typography, and intuitive color-coded feasibility badges.
-*  **1-Click Plan Ideas**: Four built-in instant starter plans (*Solo Micro-SaaS*, *Mobile App MVP*, *Freelance to Agency*, and *E-Commerce Brand*) to test the auditor in one click.
-*  **Interactive Reality Score Evolution**: A live Recharts line chart tracking your score trajectory across iterations (v1, v2, v3...) so you can measure how adjusting timeline or scope improves feasibility.
-*  **Plan Variation Testing**: Test "what-if" hypotheses in a modal (e.g. *+60 Days Buffer*, *Cut MVP Scope 50%*, *+$1,500 Runway*, *Pre-Validate Demand*) to compare iterations against your baseline.
-*  **Resilient Gemini Multi-Model Fallback**: Uses Google's `@google/genai` SDK with an automatic fallback chain (`gemini-3.1-flash-lite` ➔ `gemini-flash-latest` ➔ `gemini-3.8-flash`) to ensure instant audits and prevent free-tier rate limits or high-demand errors.
-*  **Searchable Audit History**: Past audits are automatically preserved locally with an instant keyword search drawer.
-*  **1-Click Summary Copy**: Copy your diagnostic summary and stop signals directly to clipboard for quick sharing.
+*  **Classic-Meets-Modern Design System**: Deep navy and charcoal base with warm ivory/off-white content surfaces and bold warm gold accents. Features *Playfair Display* serif headings paired with clean *Plus Jakarta Sans* / *Inter* body typography.
+*  **Dual Section Architecture**:
+   1. **Reality Check**: General ventures, startup plans, side projects, and goals.
+   2. **App Build Feasibility**: Dedicated software architecture, tech stack viability, third-party API dependencies, and cloud scale constraints.
+*  **Light & Dark Mode**: Persistent theme toggle with seamless ivory and deep navy dark palettes.
+*  **9 Comprehensive Visual Graphs (No Plain Text Dumps)**:
+   1. *Overall Score Circular Gauge*: Animated 0–100 gauge with count-up animation and one-line verdict.
+   2. *Score Breakdown Radar Chart*: 6-factor spider chart (Technology, Budget, Timeline, Skills, Market, Risk).
+   3. *Risk Severity Horizontal Bar Chart*: Color-coded distribution sorted by severity with expandable mitigation tactics.
+   4. *Tech Stack Diagram*: Layered architecture blueprint (Frontend, Backend, Database, Hosting, APIs) with Free/Paid badges.
+   5. *Resource Donut Chart & Stat Cards*: Capital burn share plus metrics for team capacity, cycle time, and runway range.
+   6. *Roadmap Gantt Timeline*: Phased delivery horizon with gated deliverables.
+   7. *Skill Gap Paired Progress Bars*: Visual comparison between required competency and current developer skill levels.
+   8. *Scalability & Cloud Cost Curve*: Dual-axis latency and cloud expenditure projections at 1K, 10K, and 100K users.
+   9. *High-Feasibility Alternatives*: Comparative option cards highlighting the "Best Pick" with 1-click test action.
+*  **Export to PDF & Copy Markdown**: Download a clean, multi-page PDF report with dedicated print stylesheets, or copy structured Markdown for Notion/Slack.
 
 ---
 

@@ -15,14 +15,8 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Sparkles,
   Layers,
-  History,
-  ArrowRight,
   PlusCircle,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
   Info
 } from 'lucide-react';
 
@@ -59,134 +53,107 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
 
   // Compute Project Iterations
   const projectAudits = getProjectIterations(currentAudit, history);
+  const projectTitle = getProjectTitle(currentAudit);
 
-  // If current audit isn't in history yet, ensure it's included
-  const currentId = currentAudit.id || 'current_active';
-  const hasCurrentInProject = projectAudits.some((a) => a.id === currentAudit.id);
+  const displayAudits: SavedAudit[] = viewMode === 'project'
+    ? projectAudits
+    : [...history].reverse();
 
-  let mergedProjectAudits = [...projectAudits];
-  if (!hasCurrentInProject) {
-    const tempAudit: SavedAudit = {
-      id: currentId,
-      timestamp: Date.now(),
-      userInput: currentAudit.userInput,
-      result: currentAudit.result,
-      projectId: getProjectId(currentAudit),
-      iteration: projectAudits.length + 1,
-      variationLabel: currentAudit.userInput.variationLabel || `v${projectAudits.length + 1}`
-    };
-    mergedProjectAudits.push(tempAudit);
-    mergedProjectAudits.sort((a, b) => a.timestamp - b.timestamp);
+  if (displayAudits.length === 0) {
+    return null;
   }
 
-  // Audits to display based on viewMode
-  const activeAudits = viewMode === 'project' 
-    ? mergedProjectAudits 
-    : [...history].sort((a, b) => a.timestamp - b.timestamp);
+  // Format data points for Recharts
+  const chartData: ChartPoint[] = displayAudits.map((audit, idx) => {
+    const isCurrent = audit.id === currentAudit.id;
+    const date = new Date(audit.timestamp);
+    const dateStr = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const timeStr = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
-  // Prepare Recharts dataset
-  const chartData: ChartPoint[] = activeAudits.map((item, idx) => {
-    const isCurrent = item.id === currentAudit.id || (item.id === currentId);
-    const score = item.result.reality_score;
+    const prevScore = idx > 0 ? displayAudits[idx - 1].result.reality_score : undefined;
+    const currentScore = audit.result.reality_score;
+    const delta = prevScore !== undefined ? currentScore - prevScore : undefined;
+
+    const label = audit.variationLabel || (viewMode === 'project' ? `v${idx + 1}` : `#${idx + 1}`);
+
     const status: 'Feasible' | 'Risky' | 'Impossible' =
-      score >= 75 ? 'Feasible' : score >= 40 ? 'Risky' : 'Impossible';
-    
-    const d = new Date(item.timestamp);
-    const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const prevScore = idx > 0 ? activeAudits[idx - 1].result.reality_score : undefined;
-    const delta = prevScore !== undefined ? score - prevScore : undefined;
-
-    const label = item.variationLabel || item.userInput.variationLabel || `v${idx + 1}`;
+      currentScore >= 75 ? 'Feasible' : currentScore >= 40 ? 'Risky' : 'Impossible';
 
     return {
       index: idx + 1,
       iterationLabel: label,
-      variationName: item.userInput.variationLabel || `Iteration ${idx + 1}`,
-      realityScore: score,
-      confidence: item.result.confidence_level,
+      variationName: audit.userInput.projectName || `Iteration ${idx + 1}`,
+      realityScore: currentScore,
+      confidence: audit.result.confidence_level,
       status,
       dateStr,
       timeStr,
-      planExcerpt: item.userInput.plan.slice(0, 75).trim() + (item.userInput.plan.length > 75 ? '...' : ''),
-      auditId: item.id,
+      planExcerpt: audit.userInput.plan.slice(0, 80) + (audit.userInput.plan.length > 80 ? '...' : ''),
+      auditId: audit.id,
       isCurrent,
       delta,
-      auditObj: item
+      auditObj: audit
     };
   });
 
-  // Calculate high-level summary metrics
-  const projectTitle = getProjectTitle(currentAudit);
-  const baselineScore = chartData.length > 0 ? chartData[0].realityScore : currentAudit.result.reality_score;
   const currentScore = currentAudit.result.reality_score;
+  const baselineScore = chartData[0]?.realityScore ?? currentScore;
   const overallDelta = currentScore - baselineScore;
-  const highestScore = chartData.reduce((max, pt) => Math.max(max, pt.realityScore), 0);
+  const highestScore = Math.max(...chartData.map(d => d.realityScore));
 
-  // Custom Dot component for Recharts
   const CustomDot = (props: any) => {
     const { cx, cy, payload } = props;
-    if (cx == null || cy == null || isNaN(cx) || isNaN(cy)) return null;
+    if (cx === undefined || cy === undefined) return null;
 
-    const isCurrent = payload?.isCurrent;
-    const score = payload?.realityScore ?? 0;
-    const color = score >= 75 ? '#059669' : score >= 40 ? '#d97706' : '#e11d48';
+    const isCurrent = payload.isCurrent;
+    const fillColor =
+      payload.realityScore >= 75
+        ? '#2563eb'
+        : payload.realityScore >= 40
+        ? '#d97706'
+        : '#dc2626';
 
     return (
-      <g
-        className="cursor-pointer transition-transform hover:scale-125"
-        onClick={() => {
-          if (payload?.auditObj && onSelectAudit) {
-            onSelectAudit(payload.auditObj);
-          }
-        }}
-      >
+      <g>
         {isCurrent && (
           <circle
             cx={cx}
             cy={cy}
-            r={13}
-            fill="none"
-            stroke="#4f46e5"
-            strokeWidth={2}
-            strokeDasharray="4 2"
-            opacity={0.7}
+            r={10}
+            fill={fillColor}
+            fillOpacity={0.2}
+            className="animate-ping"
           />
         )}
         <circle
           cx={cx}
           cy={cy}
-          r={isCurrent ? 7 : 5}
-          fill={color}
-          stroke="#ffffff"
-          strokeWidth={2.5}
+          r={isCurrent ? 6 : 4.5}
+          fill={isCurrent ? fillColor : '#ffffff'}
+          stroke={fillColor}
+          strokeWidth={isCurrent ? 3 : 2}
         />
       </g>
     );
   };
 
-  // Custom Tooltip component for Recharts in Light Mode
   const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload || !payload.length) return null;
-    const data = payload[0].payload as ChartPoint;
+    const data: ChartPoint = payload[0].payload;
 
     const statusBadgeClass =
-      data.realityScore >= 75
-        ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-        : data.realityScore >= 40
-        ? 'bg-amber-100 text-amber-800 border-amber-300'
-        : 'bg-rose-100 text-rose-800 border-rose-300';
+      data.status === 'Feasible'
+        ? 'bg-blue-50 text-blue-700 border-blue-200'
+        : data.status === 'Risky'
+        ? 'bg-amber-50 text-amber-800 border-amber-200'
+        : 'bg-red-50 text-red-700 border-red-200';
 
     return (
-      <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xl max-w-xs text-xs z-50">
-        <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-100">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900">
-            <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
-            <span>{data.variationName}</span>
-          </div>
+      <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-slate-200 max-w-xs text-xs animate-fade-in">
+        <div className="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-slate-100">
+          <span className="font-bold text-slate-800">{data.iterationLabel}</span>
           {data.isCurrent && (
-            <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-600 text-white uppercase tracking-wider">
               Active
             </span>
           )}
@@ -194,7 +161,7 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
 
         <div className="flex items-baseline justify-between mb-2">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black tracking-tight text-slate-900 tabular-nums">
+            <span className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
               {data.realityScore}
             </span>
             <span className="text-slate-400 text-[11px]">/ 100</span>
@@ -207,48 +174,48 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
         {data.delta !== undefined && data.delta !== 0 && (
           <div className="flex items-center gap-1 mb-2 font-medium">
             {data.delta > 0 ? (
-              <span className="text-emerald-700 flex items-center gap-0.5">
+              <span className="text-blue-700 flex items-center gap-0.5">
                 <TrendingUp className="w-3.5 h-3.5" /> +{data.delta} pts vs previous
               </span>
             ) : (
-              <span className="text-rose-700 flex items-center gap-0.5">
+              <span className="text-red-700 flex items-center gap-0.5">
                 <TrendingDown className="w-3.5 h-3.5" /> {data.delta} pts vs previous
               </span>
             )}
           </div>
         )}
 
-        <div className="text-slate-600 text-[11px] leading-relaxed mb-2 bg-slate-50 p-2 rounded-lg border border-slate-200 italic">
+        <div className="text-slate-600 text-[11px] leading-relaxed mb-2 bg-slate-50 p-2 rounded-xl border border-slate-200 italic">
           "{data.planExcerpt}"
         </div>
 
         <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1">
           <span>{data.dateStr} at {data.timeStr}</span>
-          <span className="text-indigo-600 font-bold hover:underline">Click to view</span>
+          <span className="text-blue-600 font-bold hover:underline">Click to view</span>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="col-span-1 md:col-span-3 bg-white rounded-2xl border-3 border-slate-900 p-6 sm:p-7 shadow-[8px_8px_0px_#0f172a] relative overflow-hidden transition-all duration-300">
+    <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-glass relative overflow-hidden transition-all duration-300">
       
       {/* Top Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b-2 border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-1.5 rounded-lg bg-indigo-600 text-white border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]">
+            <span className="p-1.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
               <TrendingUp className="w-4 h-4" />
             </span>
-            <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-              Reality Score Evolution
-              <span className="text-xs font-bold text-slate-500">
+            <h3 className="text-base font-serif font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              Feasibility Score Trajectory
+              <span className="text-xs font-normal text-slate-500 font-sans">
                 ({viewMode === 'project' ? 'Project Iterations' : 'All Audits'})
               </span>
             </h3>
           </div>
           <p className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-            <span className="text-slate-900 font-bold truncate max-w-xs">{projectTitle}</span>
+            <span className="text-slate-800 font-bold truncate max-w-xs">{projectTitle}</span>
             <span className="text-slate-300">•</span>
             <span>{chartData.length} {chartData.length === 1 ? 'iteration' : 'iterations'} recorded</span>
           </p>
@@ -257,13 +224,13 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
         {/* Action Controls & View Switcher */}
         <div className="flex items-center gap-2 flex-wrap">
           {history.length > projectAudits.length && (
-            <div className="bg-slate-100 p-1 rounded-xl border-2 border-slate-900 flex items-center text-xs shadow-[2px_2px_0px_#0f172a]">
+            <div className="bg-slate-100 p-1 rounded-xl border border-slate-200 flex items-center text-xs shadow-xs">
               <button
                 type="button"
                 onClick={() => setViewMode('project')}
-                className={`px-3 py-1 rounded-lg font-black transition-all ${
+                className={`px-3 py-1 rounded-lg font-bold transition-all ${
                   viewMode === 'project'
-                    ? 'bg-indigo-600 text-white shadow-xs'
+                    ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-700 hover:text-slate-950'
                 }`}
               >
@@ -272,9 +239,9 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
               <button
                 type="button"
                 onClick={() => setViewMode('all')}
-                className={`px-3 py-1 rounded-lg font-black transition-all ${
+                className={`px-3 py-1 rounded-lg font-bold transition-all ${
                   viewMode === 'all'
-                    ? 'bg-indigo-600 text-white shadow-xs'
+                    ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-700 hover:text-slate-950'
                 }`}
               >
@@ -287,65 +254,65 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
             <button
               type="button"
               onClick={() => onOpenVariationModal(currentAudit.userInput)}
-              className="neo-3d-btn-primary px-3.5 py-1.5 rounded-xl font-black text-xs flex items-center gap-1.5"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all shadow-sm shadow-blue-500/25"
             >
               <PlusCircle className="w-3.5 h-3.5" />
-              Test Plan Variation
+              <span>Test De-scoped Iteration</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Trajectory KPI Strip with 3D Blocks */}
+      {/* Trajectory KPI Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="bg-slate-50 p-3.5 rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a]">
-          <div className="text-[10px] uppercase font-black text-slate-500 tracking-wider mb-1">
+        <div className="bg-white/70 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
             Current Score
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-indigo-700 tabular-nums">{currentScore}</span>
-            <span className="text-[11px] text-slate-500 font-bold">/ 100</span>
+            <span className="text-2xl font-serif font-bold text-slate-900 tabular-nums">{currentScore}</span>
+            <span className="text-[11px] text-slate-400 font-medium">/ 100</span>
           </div>
         </div>
 
-        <div className="bg-slate-50 p-3.5 rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a]">
-          <div className="text-[10px] uppercase font-black text-slate-500 tracking-wider mb-1">
+        <div className="bg-white/70 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
             Baseline (v1)
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-slate-700 tabular-nums">{baselineScore}</span>
-            <span className="text-[11px] text-slate-500 font-bold">initial</span>
+            <span className="text-2xl font-serif font-bold text-slate-700 tabular-nums">{baselineScore}</span>
+            <span className="text-[11px] text-slate-400 font-medium">initial</span>
           </div>
         </div>
 
-        <div className="bg-slate-50 p-3.5 rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a]">
-          <div className="text-[10px] uppercase font-black text-slate-500 tracking-wider mb-1">
+        <div className="bg-white/70 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
             Net Trajectory
           </div>
-          <div className="flex items-center gap-1 text-sm font-black">
+          <div className="flex items-center gap-1 text-sm font-bold">
             {overallDelta > 0 ? (
-              <span className="text-emerald-700 flex items-center gap-0.5 text-base">
+              <span className="text-blue-600 flex items-center gap-0.5 text-base font-serif">
                 <TrendingUp className="w-4 h-4" /> +{overallDelta} pts
               </span>
             ) : overallDelta < 0 ? (
-              <span className="text-rose-700 flex items-center gap-0.5 text-base">
+              <span className="text-red-600 flex items-center gap-0.5 text-base font-serif">
                 <TrendingDown className="w-4 h-4" /> {overallDelta} pts
               </span>
             ) : (
-              <span className="text-slate-500 flex items-center gap-0.5 text-base">
+              <span className="text-slate-500 flex items-center gap-0.5 text-base font-serif">
                 <Minus className="w-4 h-4" /> Baseline
               </span>
             )}
           </div>
         </div>
 
-        <div className="bg-slate-50 p-3.5 rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a]">
-          <div className="text-[10px] uppercase font-black text-slate-500 tracking-wider mb-1">
+        <div className="bg-white/70 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">
             Peak Feasibility
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-emerald-700 tabular-nums">{highestScore}</span>
-            <span className="text-[11px] text-slate-500 font-bold">max</span>
+            <span className="text-2xl font-serif font-bold text-blue-600 tabular-nums">{highestScore}</span>
+            <span className="text-[11px] text-slate-400 font-medium">max</span>
           </div>
         </div>
       </div>
@@ -377,13 +344,13 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
             {/* Threshold Reference Lines */}
             <ReferenceLine
               y={75}
-              stroke="#059669"
+              stroke="#2563eb"
               strokeDasharray="4 4"
               strokeWidth={1.5}
-              opacity={0.7}
+              opacity={0.8}
               label={{
                 value: 'Feasible (75+)',
-                fill: '#059669',
+                fill: '#2563eb',
                 fontSize: 10,
                 fontWeight: 600,
                 position: 'insideTopRight'
@@ -391,32 +358,32 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
             />
             <ReferenceLine
               y={40}
-              stroke="#d97706"
+              stroke="#dc2626"
               strokeDasharray="4 4"
               strokeWidth={1.5}
-              opacity={0.7}
+              opacity={0.8}
               label={{
-                value: 'Risky (40)',
-                fill: '#d97706',
+                value: 'Fatal Deficit (<40)',
+                fill: '#dc2626',
                 fontSize: 10,
                 fontWeight: 600,
                 position: 'insideTopRight'
               }}
             />
 
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#6366f1', strokeWidth: 1, strokeDasharray: '4 4' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#2563eb', strokeWidth: 1, strokeDasharray: '4 4' }} />
 
             <Line
               type="monotone"
               dataKey="realityScore"
-              stroke="#4f46e5"
-              strokeWidth={3.5}
+              stroke="#2563eb"
+              strokeWidth={3}
               dot={<CustomDot />}
               activeDot={{
                 r: 8,
                 stroke: '#ffffff',
                 strokeWidth: 2,
-                fill: '#4f46e5'
+                fill: '#2563eb'
               }}
               animationDuration={600}
             />
@@ -428,16 +395,16 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
       <div className="flex items-center justify-between flex-wrap gap-2 text-[11px] text-slate-500 mt-2 px-1">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-            <span className="font-medium text-slate-700">Feasible (75-100)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+            <span className="font-semibold text-slate-700">Feasible (75-100)</span>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-            <span className="font-medium text-slate-700">Risky (40-74)</span>
+            <span className="font-semibold text-slate-700">Risky (40-74)</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-600"></span>
-            <span className="font-medium text-slate-700">Impossible (&lt;40)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-red-600"></span>
+            <span className="font-semibold text-slate-700">Impossible (&lt;40)</span>
           </span>
         </div>
         <span className="text-slate-400 text-[10px]">
@@ -449,7 +416,7 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
       <div className="mt-5 pt-4 border-t border-slate-100">
         <div className="flex items-center justify-between mb-2.5">
           <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-indigo-600" />
+            <Layers className="w-3.5 h-3.5 text-blue-600" />
             Iteration History & Variations
           </span>
           {chartData.length > 1 && (
@@ -460,9 +427,9 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
         </div>
 
         {chartData.length === 1 ? (
-          <div className="p-4 rounded-xl bg-slate-50 border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5 text-slate-800 font-medium">
-              <Info className="w-4 h-4 text-indigo-600 shrink-0" />
+          <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5 text-slate-700 font-medium">
+              <Info className="w-4 h-4 text-blue-600 shrink-0" />
               <span>
                 <strong>Baseline audit recorded.</strong> Try testing a variation with modified timeline, budget, or scope to see your Reality Score improve!
               </span>
@@ -471,10 +438,10 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenVariationModal(currentAudit.userInput)}
-                className="neo-3d-btn shrink-0 px-3.5 py-1.5 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-slate-900 border-2 border-slate-900 text-xs font-black flex items-center gap-1.5"
+                className="shrink-0 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
-                Create Iteration #2
+                <span>Create Iteration #2</span>
               </button>
             )}
           </div>
@@ -484,10 +451,10 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
               const isSelected = pt.isCurrent;
               const scoreBadgeColor =
                 pt.realityScore >= 75
-                  ? 'text-emerald-950 bg-emerald-300 border-slate-900'
+                  ? 'text-blue-800 bg-blue-100 border-blue-200'
                   : pt.realityScore >= 40
-                  ? 'text-amber-950 bg-amber-300 border-slate-900'
-                  : 'text-rose-950 bg-rose-300 border-slate-900';
+                  ? 'text-amber-800 bg-amber-100 border-amber-200'
+                  : 'text-red-800 bg-red-100 border-red-200';
 
               return (
                 <button
@@ -498,19 +465,19 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
                       onSelectAudit(pt.auditObj);
                     }
                   }}
-                  className={`group shrink-0 px-3 py-2 rounded-xl text-xs font-black border-2 border-slate-900 transition-all flex items-center gap-2 ${
+                  className={`group shrink-0 px-3 py-2 rounded-2xl text-xs font-medium border transition-all flex items-center gap-2 ${
                     isSelected
-                      ? 'bg-indigo-600 text-white shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] translate-y-0.5'
-                      : 'bg-white text-slate-900 hover:bg-slate-50 shadow-[2px_2px_0px_#0f172a] hover:shadow-[3px_3px_0px_#0f172a] hover:-translate-y-0.5'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-400'}`} />
-                  <span>{pt.iterationLabel}</span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-black border ${scoreBadgeColor}`}>
+                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-300'}`} />
+                  <span className="font-semibold">{pt.iterationLabel}</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border font-mono ${scoreBadgeColor}`}>
                     {pt.realityScore}
                   </span>
                   {isSelected && (
-                    <span className="text-[9px] uppercase tracking-wider text-slate-900 font-black bg-white px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] uppercase tracking-wider text-blue-900 font-bold bg-white/80 px-1.5 py-0.5 rounded">
                       Active
                     </span>
                   )}
@@ -522,10 +489,10 @@ export const ScoreEvolutionChart: React.FC<ScoreEvolutionChartProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenVariationModal(currentAudit.userInput)}
-                className="shrink-0 px-3.5 py-2 rounded-xl text-xs font-black border-2 border-dashed border-slate-400 bg-white hover:border-slate-900 hover:bg-indigo-50 text-slate-800 transition-all flex items-center gap-1.5 shadow-[2px_2px_0px_#cbd5e1] hover:shadow-[2px_2px_0px_#0f172a]"
+                className="shrink-0 px-3.5 py-2 rounded-2xl text-xs font-semibold border border-dashed border-slate-300 bg-transparent hover:border-blue-500 hover:text-blue-600 text-slate-600 transition-all flex items-center gap-1.5"
                 title="Create another variation"
               >
-                <PlusCircle className="w-3.5 h-3.5 text-indigo-600" />
+                <PlusCircle className="w-3.5 h-3.5 text-blue-600" />
                 <span>+ Variation</span>
               </button>
             )}

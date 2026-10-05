@@ -24,7 +24,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ result, user
             <Target className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-base font-serif font-bold text-slate-900">
+            <h3 className="text-base font-bold text-slate-900">
               Executive Brief: 3 Critical Feasibility Takeaways
             </h3>
           </div>
@@ -34,9 +34,9 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ result, user
           {takeaways.map((takeaway, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex items-start gap-3 shadow-xs hover:border-blue-200 transition-colors"
+              className="p-4 rounded-2xl bg-white border border-slate-300 flex items-start gap-3 shadow-xs hover:border-blue-400 transition-colors"
             >
-              <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5 border border-blue-200">
+              <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5 border border-blue-300">
                 {idx + 1}
               </span>
               <p className="text-xs text-slate-700 leading-relaxed font-normal">
@@ -48,7 +48,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ result, user
       </div>
 
       {/* Critical Stop Signal Banner (Classic Red Glassmorphic) */}
-      <div className="p-5 rounded-2xl bg-red-50/80 backdrop-blur-md border border-red-200 shadow-glass-red flex flex-col sm:flex-row items-start gap-4">
+      <div className="p-5 rounded-2xl bg-red-50/90 backdrop-blur-md border border-red-300 shadow-glass-red flex flex-col sm:flex-row items-start gap-4">
         <div className="p-2.5 rounded-xl bg-red-600 text-white shrink-0 shadow-sm shadow-red-500/30">
           <OctagonAlert className="w-5 h-5" />
         </div>

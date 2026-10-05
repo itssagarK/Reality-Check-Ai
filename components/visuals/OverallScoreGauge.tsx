@@ -104,7 +104,7 @@ export const OverallScoreGauge: React.FC<OverallScoreGaugeProps> = ({
               Feasibility Assessment
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             {userInput.projectName || "App Feasibility & Architecture"}
           </h2>
         </div>

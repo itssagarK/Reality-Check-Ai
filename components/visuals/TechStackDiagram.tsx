@@ -69,7 +69,7 @@ export const TechStackDiagram: React.FC<TechStackDiagramProps> = ({ stack }) => 
           return (
             <div
               key={idx}
-              className="p-3 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 hover:border-blue-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs"
+              className="p-3 rounded-2xl bg-white border border-slate-300 hover:border-blue-400 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs"
             >
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 shadow-xs shrink-0">

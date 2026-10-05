@@ -28,7 +28,6 @@ import {
   Layers,
   ShieldAlert,
   Clock,
-  Sparkles,
   IndianRupee
 } from 'lucide-react';
 
@@ -220,24 +219,13 @@ const App: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           
           {/* Logo Branding */}
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={handleReset}>
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Compass className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-2.5 cursor-pointer group" onClick={handleReset}>
+            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <Compass className="w-4 h-4 text-white" />
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-base font-serif font-bold text-slate-900 tracking-tight">
-                  Reality Check India
-                </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold border border-blue-200/80 flex items-center gap-0.5">
-                  <IndianRupee className="w-2.5 h-2.5" />
-                  <span>INR EDITION</span>
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500 font-medium hidden sm:block">
-                App Building Feasibility & Architecture in ₹ Indian Rupees
-              </span>
-            </div>
+            <span className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+              Reality Check India
+            </span>
           </div>
 
           {/* Core Navigation Mode Switcher */}
@@ -375,33 +363,29 @@ const App: React.FC = () => {
       />
 
       {/* Main Container */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         
         {/* Loading State Skeleton */}
         {isLoading && <SkeletonReport />}
 
         {/* Input Form State */}
         {!result && !isLoading && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             
-            {/* Glassmorphic Hero Header */}
-            <div className="max-w-3xl mx-auto text-center space-y-3 pt-2 sm:pt-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-xs font-semibold shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>Pre-Code Architecture & Feasibility Simulator (India Edition)</span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-slate-900 tracking-tight leading-snug">
+            {/* Hero Header */}
+            <div className="max-w-3xl mx-auto text-center pt-1 space-y-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
                 {activeSection === 'app-build'
                   ? "Audit Your Software App Feasibility in Indian Rupees (₹)"
                   : "Audit Your Ambitious Indian Venture Against Reality"}
               </h1>
-
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-                {activeSection === 'app-build'
-                  ? "Evaluate tech stack complexity, development hours, monthly cloud costs in Mumbai (ap-south-1), UPI checkout drop-offs, and fatal bottlenecks before writing code."
-                  : "Optimism bias kills ambitious ventures. Input your scope, timeline, and Indian Rupee budget to test viability."}
-              </p>
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
+                <span>ap-south-1 Mumbai Latency</span>
+                <span aria-hidden="true" className="text-slate-300">·</span>
+                <span>UPI AutoPay Churn</span>
+                <span aria-hidden="true" className="text-slate-300">·</span>
+                <span>Solo Dev Hours</span>
+              </div>
             </div>
 
             {/* Input Form Component with Vertical Side Column */}
@@ -413,7 +397,7 @@ const App: React.FC = () => {
             />
 
             {error && (
-              <div className="max-w-3xl mx-auto p-4 bg-red-50/90 border border-red-200 rounded-2xl text-red-700 text-xs text-center shadow-glass-red">
+              <div className="max-w-3xl mx-auto p-3 bg-red-50/90 border border-red-200 rounded-xl text-red-700 text-xs text-center shadow-glass-red">
                 {error}
               </div>
             )}

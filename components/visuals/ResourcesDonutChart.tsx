@@ -110,8 +110,8 @@ export const ResourcesDonutChart: React.FC<ResourcesDonutChartProps> = ({
 
       {/* Stat Cards Strip in INR */}
       <div className="grid grid-cols-3 gap-2.5 my-3">
-        <div className="p-3.5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-300 flex flex-col justify-between shadow-xs">
+          <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
             <Users className="w-3 h-3 text-blue-600" />
             Team
           </div>
@@ -120,8 +120,8 @@ export const ResourcesDonutChart: React.FC<ResourcesDonutChartProps> = ({
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-300 flex flex-col justify-between shadow-xs">
+          <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
             <Clock className="w-3 h-3 text-blue-600" />
             Duration
           </div>
@@ -130,8 +130,8 @@ export const ResourcesDonutChart: React.FC<ResourcesDonutChartProps> = ({
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-300 flex flex-col justify-between shadow-xs">
+          <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">
             <Wallet className="w-3 h-3 text-blue-600" />
             Runway
           </div>

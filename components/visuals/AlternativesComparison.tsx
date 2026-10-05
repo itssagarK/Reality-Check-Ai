@@ -69,8 +69,8 @@ export const AlternativesComparison: React.FC<AlternativesComparisonProps> = ({
             key={idx}
             className={`p-4 rounded-2xl border transition-all flex flex-col justify-between shadow-xs ${
               alt.is_best_pick
-                ? 'bg-blue-50/70 border-blue-300 ring-1 ring-blue-300'
-                : 'bg-white/70 border-slate-200/80 hover:border-slate-300'
+                ? 'bg-blue-50/90 border-blue-500 ring-1 ring-blue-500'
+                : 'bg-white border-slate-300 hover:border-blue-400'
             }`}
           >
             <div>

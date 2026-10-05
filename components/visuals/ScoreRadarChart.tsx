@@ -263,8 +263,8 @@ export const ScoreRadarChart: React.FC<ScoreRadarChartProps> = ({
                     onClick={() => handleDimensionClick(item.factor, item.score, idx)}
                     className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 group ${
                       isSelected
-                        ? 'bg-blue-50/90 border-blue-400 shadow-xs ring-1 ring-blue-300'
-                        : 'bg-white/60 hover:bg-white border-slate-200/80 hover:border-blue-300'
+                        ? 'bg-blue-50/95 border-blue-600 shadow-xs ring-1 ring-blue-500'
+                        : 'bg-white hover:bg-slate-50 border-slate-300 hover:border-blue-400 shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate">

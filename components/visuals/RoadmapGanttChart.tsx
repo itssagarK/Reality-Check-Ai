@@ -64,7 +64,7 @@ export const RoadmapGanttChart: React.FC<RoadmapGanttChartProps> = ({ phases }) 
             <div
               key={idx}
               onClick={() => setSelectedPhaseIdx(selectedPhaseIdx === idx ? null : idx)}
-              className="p-3 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 hover:border-blue-300 transition-colors cursor-pointer shadow-xs"
+              className="p-3 rounded-2xl bg-white border border-slate-300 hover:border-blue-400 transition-colors cursor-pointer shadow-2xs"
             >
               <div className="flex items-center justify-between text-xs mb-1.5 gap-2">
                 <div className="flex items-center gap-2 truncate">
